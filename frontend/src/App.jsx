@@ -386,8 +386,34 @@ function StepStops({ t, lang, meta, stops, setStops, stopInput, setStopInput }) 
     const s = v.trim();
     if (s && !stops.some((x) => x.toLowerCase() === s.toLowerCase())) setStops([...stops, s]);
   };
+  const isOn = (name) => stops.some((x) => x.toLowerCase() === name.toLowerCase());
+  const toggleName = (name) =>
+    isOn(name) ? setStops(stops.filter((x) => x.toLowerCase() !== name.toLowerCase())) : add(name);
+  const suggNames = sugg.map((s) => (lang === "ru" ? s.ru : s.sr).toLowerCase());
+  const customs = stops.filter((s) => !suggNames.includes(s.toLowerCase()));
   return (
     <div>
+      <div className="grid3">
+        {sugg.map((s) => {
+          const name = lang === "ru" ? s.ru : s.sr;
+          const on = isOn(name);
+          return (
+            <button key={name} className={`tile ${on ? "stopped" : ""}`} onClick={() => toggleName(name)}>
+              {on && <span className="ban"><Icon name="ban" size={13} stroke={2.4} /></span>}
+              <span className="ticon"><Icon name={s.icon ?? "plant"} size={26} /></span>
+              <span className="t" style={{ fontSize: 13 }}>{name}</span>
+            </button>
+          );
+        })}
+        {customs.map((s) => (
+          <button key={s} className="tile stopped" onClick={() => setStops(stops.filter((x) => x !== s))}>
+            <span className="ban"><Icon name="ban" size={13} stroke={2.4} /></span>
+            <span className="ticon"><Icon name="salt" size={26} /></span>
+            <span className="t" style={{ fontSize: 13 }}>{s}</span>
+          </button>
+        ))}
+      </div>
+      <div className="often-label">{t.ownProduct}</div>
       <div className="addrow">
         <input value={stopInput} placeholder={t.stopPlaceholder}
           onChange={(e) => setStopInput(e.target.value)}
@@ -395,28 +421,6 @@ function StepStops({ t, lang, meta, stops, setStops, stopInput, setStopInput }) 
         <button aria-label="+" onClick={() => { add(stopInput); setStopInput(""); }}>
           <Icon name="plus" size={20} />
         </button>
-      </div>
-      {stops.length > 0 && (
-        <div className="chips">
-          {stops.map((s) => (
-            <button key={s} className="chip stop" onClick={() => setStops(stops.filter((x) => x !== s))}>
-              {s} <Icon name="x" size={13} className="xi" />
-            </button>
-          ))}
-        </div>
-      )}
-      <div className="often-label">{t.often}</div>
-      <div className="chips">
-        {sugg.map((s) => {
-          const name = lang === "ru" ? s.ru : s.sr;
-          const on = stops.some((x) => x.toLowerCase() === name.toLowerCase());
-          return (
-            <button key={name} className={`chip ${on ? "stop" : ""}`}
-              onClick={() => (on ? setStops(stops.filter((x) => x.toLowerCase() !== name.toLowerCase())) : add(name))}>
-              {on ? <>{name} <Icon name="x" size={13} className="xi" /></> : <>+ {name}</>}
-            </button>
-          );
-        })}
       </div>
     </div>
   );

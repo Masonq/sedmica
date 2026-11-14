@@ -40,12 +40,18 @@ EQUIPMENT = [
 ]
 
 STOP_SUGGESTIONS = [
-    {"ru": "Свинина", "sr": "Svinjetina"}, {"ru": "Говядина", "sr": "Junetina"},
-    {"ru": "Грибы", "sr": "Pečurke"}, {"ru": "Лук", "sr": "Crni luk"},
-    {"ru": "Баклажаны", "sr": "Plavi patlidžan"}, {"ru": "Печень", "sr": "Džigerica"},
-    {"ru": "Творог", "sr": "Sitan sir"}, {"ru": "Тофу", "sr": "Tofu"},
-    {"ru": "Брокколи", "sr": "Brokoli"}, {"ru": "Цветная капуста", "sr": "Karfiol"},
-    {"ru": "Перловка", "sr": "Ječam"}, {"ru": "Сельдерей", "sr": "Celer"},
+    {"ru": "Свинина", "sr": "Svinjetina", "icon": "pig"},
+    {"ru": "Говядина", "sr": "Junetina", "icon": "meat"},
+    {"ru": "Грибы", "sr": "Pečurke", "icon": "mushroom"},
+    {"ru": "Лук", "sr": "Crni luk", "icon": "plant2"},
+    {"ru": "Баклажаны", "sr": "Plavi patlidžan", "icon": "pepper"},
+    {"ru": "Печень", "sr": "Džigerica", "icon": "sausage"},
+    {"ru": "Творог", "sr": "Sitan sir", "icon": "cheese"},
+    {"ru": "Тофу", "sr": "Tofu", "icon": "cube"},
+    {"ru": "Брокколи", "sr": "Brokoli", "icon": "tree"},
+    {"ru": "Цветная капуста", "sr": "Karfiol", "icon": "flower"},
+    {"ru": "Рыба", "sr": "Riba", "icon": "fish"},
+    {"ru": "Сельдерей", "sr": "Celer", "icon": "plant"},
 ]
 
 # categories for shopping list

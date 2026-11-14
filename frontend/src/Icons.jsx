@@ -4,6 +4,8 @@ import {
   IconAcorn, IconBrandPeanut, IconMilk, IconEgg, IconWheat, IconFish, IconFishBone, IconSeeding,
   IconBowlSpoon, IconStack2, IconEggFried, IconBread, IconMilkshake, IconCake, IconSoup,
   IconToolsKitchen2, IconBowlChopsticks, IconMeat, IconBowl, IconSalad, IconBaguette, IconBurger,
+  IconPig, IconMushroom, IconPlant, IconPlant2, IconPepper, IconSausage, IconCube,
+  IconTree, IconFlower, IconBan,
   IconSun, IconMoon, IconSunrise, IconSunHigh, IconClock, IconUsers, IconRefresh, IconCheck,
   IconBasket, IconCarrot, IconCheese, IconGrain, IconSalt, IconChevronRight, IconChevronLeft,
   IconShare2, IconX, IconPlus, IconMinus, IconFlame as IconFire,
@@ -21,6 +23,10 @@ const MAP = {
   cup: IconMilkshake, pie: IconCake, soup: IconSoup, stew: IconToolsKitchen2,
   pasta: IconBowlChopsticks, chicken: IconMeat, rice: IconBowl, salad: IconSalad,
   wrap: IconBaguette, patty: IconBurger, casserole: IconCake,
+  /* stop products */
+  pig: IconPig, mushroom: IconMushroom, plant: IconPlant, plant2: IconPlant2,
+  pepper: IconPepper, sausage: IconSausage, cube: IconCube, tree: IconTree,
+  flower: IconFlower, ban: IconBan, meat: IconMeat, cheese: IconCheese, salt: IconSalt,
   /* shopping categories */
   "cat-meat": IconMeat, "cat-dairy": IconCheese, "cat-veg": IconCarrot,
   "cat-grocery": IconGrain, "cat-other": IconSalt,
