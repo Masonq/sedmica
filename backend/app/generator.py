@@ -122,7 +122,7 @@ def day_costs(week, servings_map, store):
             mc = recipe_cost(r, servings, store)
             c += mc
             kcal += r["kcal"]
-            meals[m] = {"id": r["id"], "ru": r["ru"], "sr": r["sr"], "emoji": r["emoji"],
+            meals[m] = {"id": r["id"], "ru": r["ru"], "sr": r["sr"], "emoji": r["emoji"], "icon": r.get("icon", "stew"),
                         "time": r["time"], "kcal": r["kcal"], "servings": servings,
                         "family": r["family"], "cost": round(mc / 10) * 10}
         out[d] = {"cost": round(c / 10) * 10, "kcal": kcal, "meals": meals}

@@ -12,6 +12,7 @@ from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 
 from .data import STORES, CITIES, ALLERGENS, EQUIPMENT, STOP_SUGGESTIONS, CATS, RECIPES, ING_BY_ID
+from .steps import STEPS
 from .generator import generate, swap_meal, DAYS, MEALS
 
 DB_PATH = os.environ.get("SEDMICA_DB", os.path.join(os.path.dirname(__file__), "..", "sedmica.db"))
@@ -88,7 +89,7 @@ def recipe(rid: str):
         raise HTTPException(404, "recipe not found")
     ings = [{"id": k, "ru": ING_BY_ID[k]["ru"], "sr": ING_BY_ID[k]["sr"],
              "qty": v, "unit": ING_BY_ID[k]["unit"]} for k, v in r["ings"].items()]
-    return {**r, "ingredients": ings}
+    return {**r, "ingredients": ings, "steps": STEPS.get(rid, {"ru": [], "sr": []})}
 
 
 # --- static frontend (production) ---

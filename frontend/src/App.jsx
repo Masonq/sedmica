@@ -1,10 +1,11 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import { T, plural, fmt, CAT_KEY, CAT_EMOJI } from "./i18n.js";
+import { useEffect, useMemo, useState } from "react";
+import { T, plural, fmt, CAT_KEY } from "./i18n.js";
+import Icon from "./Icons.jsx";
 
 const API = "/api";
 const DAY_IDS = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
 const MEAL_ORDER = ["breakfast", "lunch", "dinner"];
-const MEAL_EMOJI = { breakfast: "🌅", lunch: "☀️", dinner: "🌙" };
+const MEAL_ICON = { breakfast: "sunrise", lunch: "sunhigh", dinner: "moon" };
 const STORE_COLORS = {
   lidl: "#0050aa", maxi: "#d6001c", idea: "#e2001a", univer: "#00704a",
   dis: "#f07d00", aroma: "#7a1f7a", roda: "#c8102e", tempo: "#0072bc",
@@ -37,6 +38,7 @@ export default function App() {
   const [step, setStep] = useState(0);
   const [dayIdx, setDayIdx] = useState(0);
   const [toast, setToast] = useState("");
+  const [recipe, setRecipe] = useState(null); // {data, servings}
 
   // wizard state
   const [city, setCity] = useState("Beograd");
@@ -54,7 +56,6 @@ export default function App() {
 
   useEffect(() => { api("/meta").then(setMeta).catch(() => {}); }, []);
 
-  // restore shared / saved plan
   useEffect(() => {
     const m = location.hash.match(/^#\/p\/([\w-]+)/);
     const tok = m ? m[1] : null;
@@ -99,30 +100,33 @@ export default function App() {
     } catch { showToast(t.error); }
   }
 
+  async function openRecipe(rid, servings) {
+    try {
+      const data = await api(`/recipe/${rid}`);
+      setRecipe({ data, servings });
+    } catch { showToast(t.error); }
+  }
+
   const storeName = useMemo(() => {
     if (!meta || !plan) return "";
     return meta.stores.find((s) => s.id === plan.params.store)?.name ?? "";
   }, [meta, plan]);
 
-  const header = (
-    <header className="topbar">
-      <button className="brand" onClick={() => setScreen(plan ? "plan" : "landing")} aria-label="Sedmica">
-        <span className="seven">7</span>Sedmica
-      </button>
-      <div className="topbar-actions">
-        <button className="iconbtn" onClick={() => setLang(lang === "sr" ? "ru" : "sr")} aria-label="Language">
-          {lang === "sr" ? "RU" : "SR"}
-        </button>
-        <button className="iconbtn" onClick={() => setTheme(theme === "dark" ? "light" : "dark")} aria-label="Theme">
-          {theme === "dark" ? "☀️" : "🌙"}
-        </button>
-      </div>
-    </header>
-  );
-
   return (
     <div className="shell">
-      {header}
+      <header className="topbar">
+        <button className="brand" onClick={() => setScreen(plan ? "plan" : "landing")} aria-label="Sedmica">
+          <span className="seven">7</span>Sedmica
+        </button>
+        <div className="topbar-actions">
+          <button className="iconbtn" onClick={() => setLang(lang === "sr" ? "ru" : "sr")} aria-label="Language">
+            {lang === "sr" ? "RU" : "SR"}
+          </button>
+          <button className="iconbtn" onClick={() => setTheme(theme === "dark" ? "light" : "dark")} aria-label="Theme">
+            <Icon name={theme === "dark" ? "sun" : "moon"} size={19} />
+          </button>
+        </div>
+      </header>
       {screen === "landing" && (
         <Landing t={t} meta={meta} city={city} setCity={setCity}
           onStart={() => { setStep(0); setScreen("wizard"); }} />
@@ -138,7 +142,7 @@ export default function App() {
       )}
       {screen === "building" && <Building t={t} />}
       {screen === "plan" && plan && (
-        <PlanView t={t} lang={lang} plan={plan} storeName={storeName}
+        <PlanView t={t} plan={plan} storeName={storeName}
           onDay={(i) => { setDayIdx(i); setScreen("day"); }}
           onShop={() => setScreen("shop")}
           onNew={() => { setScreen("wizard"); setStep(0); }}
@@ -152,7 +156,7 @@ export default function App() {
       )}
       {screen === "day" && plan && (
         <DayView t={t} lang={lang} plan={plan} dayIdx={dayIdx} setDayIdx={setDayIdx}
-          onBack={() => setScreen("plan")} onSwap={swap} />
+          onBack={() => setScreen("plan")} onSwap={swap} onOpen={openRecipe} />
       )}
       {screen === "shop" && plan && (
         <ShopView t={t} lang={lang} plan={plan} checked={checked} setChecked={setChecked}
@@ -160,13 +164,14 @@ export default function App() {
       )}
       {screen === "error" && (
         <div className="errbox">
-          <div className="e">🥕</div>
+          <div className="e"><Icon name="salad" size={44} /></div>
           <p>{t.error}</p>
           <button className="cta" style={{ maxWidth: 260, margin: "20px auto 0" }} onClick={() => setScreen("wizard")}>
             {t.retry}
           </button>
         </div>
       )}
+      {recipe && <RecipeSheet t={t} lang={lang} recipe={recipe} onClose={() => setRecipe(null)} />}
       {toast && <div className="toast">{toast}</div>}
     </div>
   );
@@ -174,7 +179,7 @@ export default function App() {
 
 /* ---------------- Landing ---------------- */
 function Landing({ t, meta, city, setCity, onStart }) {
-  const week = ["🥞", "🍲", "🐟", "🥘", "🍝", "🍗", "🥧"];
+  const week = ["pancakes", "soup", "fish", "stew", "pasta", "chicken", "pie"];
   return (
     <main className="hero">
       <h1>{t.heroTitle}</h1>
@@ -183,7 +188,7 @@ function Landing({ t, meta, city, setCity, onStart }) {
         {t.daysShort.map((d, i) => (
           <div className="cell" key={d}>
             <span className="d">{d}</span>
-            <span className="e">{week[i]}</span>
+            <span className="e"><Icon name={week[i]} size={22} /></span>
           </div>
         ))}
       </div>
@@ -203,7 +208,7 @@ function Landing({ t, meta, city, setCity, onStart }) {
 
 /* ---------------- Wizard ---------------- */
 function Wizard(props) {
-  const { t, lang, meta, step, setStep, onBack, onBuild } = props;
+  const { t, step, setStep, onBack, onBuild } = props;
   const total = 6;
   const titles = [
     [t.s1t, t.s1s], [t.s2t, t.s2s], [t.s3t, t.s3s],
@@ -249,7 +254,7 @@ function StepStore({ meta, store, setStore, lang }) {
     <div className="grid2">
       {stores.map((s, i) => (
         <button key={s.id} className={`tile ${store === s.id ? "on" : ""}`} onClick={() => setStore(s.id)}>
-          {store === s.id && <span className="check">✓</span>}
+          {store === s.id && <span className="check"><Icon name="check" size={12} stroke={3} /></span>}
           <span className="logo" style={{ background: STORE_COLORS[s.id] ?? "#666" }}>{s.name[0]}</span>
           <span className="t">{s.name}</span>
           <span className="s">{lang === "ru" ? s.tag_ru : s.tag_sr}</span>
@@ -264,14 +269,15 @@ function StepPeople({ t, people, setPeople }) {
   return (
     <div>
       <div className="stepper">
-        <button onClick={() => setPeople(Math.max(1, people - 1))} disabled={people <= 1} aria-label="−">−</button>
+        <button onClick={() => setPeople(Math.max(1, people - 1))} disabled={people <= 1} aria-label="−">
+          <Icon name="minus" size={22} />
+        </button>
         <span className="num">{people}</span>
-        <button onClick={() => setPeople(Math.min(8, people + 1))} disabled={people >= 8} aria-label="+">+</button>
+        <button onClick={() => setPeople(Math.min(8, people + 1))} disabled={people >= 8} aria-label="+">
+          <Icon name="plus" size={22} />
+        </button>
       </div>
       <div className="stepper-sub">{plural(people, t.persons)}</div>
-      <div className="people-row" aria-hidden="true">
-        {Array.from({ length: people }, (_, i) => <span key={i}>{i % 2 ? "🧑" : "👩"}</span>)}
-      </div>
     </div>
   );
 }
@@ -280,9 +286,9 @@ function StepBudget({ t, people, budget, setBudget }) {
   const min = 3000, max = 30000;
   const fill = ((budget - min) / (max - min)) * 100;
   const perHead = budget / people;
-  const mood = perHead < 2600 ? ["tight", "var(--red)", t.moodTight, t.moodTightS]
-    : perHead < 4200 ? ["ok", "var(--green)", t.moodOk, t.moodOkS]
-    : ["spare", "var(--amber)", t.moodSpare, t.moodSpareS];
+  const mood = perHead < 2600 ? ["var(--red)", t.moodTight, t.moodTightS]
+    : perHead < 4200 ? ["var(--green)", t.moodOk, t.moodOkS]
+    : ["var(--amber)", t.moodSpare, t.moodSpareS];
   return (
     <div>
       <div className="budget-big">{fmt(budget)}<small>{t.cur}</small></div>
@@ -292,10 +298,10 @@ function StepBudget({ t, people, budget, setBudget }) {
         onChange={(e) => setBudget(+e.target.value)} aria-label={t.s3t} />
       <div className="range-ends"><span>{fmt(min)}</span><span>{fmt(max)}</span></div>
       <div className="mood">
-        <span className="dot" style={{ background: mood[1] }} />
+        <span className="dot" style={{ background: mood[0] }} />
         <span>
-          <span className="mt">{mood[2]}</span>
-          <span className="ms" style={{ display: "block" }}>{mood[3]}</span>
+          <span className="mt">{mood[1]}</span>
+          <span className="ms" style={{ display: "block" }}>{mood[2]}</span>
         </span>
       </div>
     </div>
@@ -310,8 +316,8 @@ function StepAllergy({ t, lang, meta, allergies, setAllergies }) {
       <div className="grid3">
         {list.map((a) => (
           <button key={a.id} className={`tile ${allergies.includes(a.id) ? "on" : ""}`} onClick={() => toggle(a.id)}>
-            {allergies.includes(a.id) && <span className="check">✓</span>}
-            <span className="emoji">{a.emoji}</span>
+            {allergies.includes(a.id) && <span className="check"><Icon name="check" size={12} stroke={3} /></span>}
+            <span className="ticon"><Icon name={a.id} size={26} /></span>
             <span className="t" style={{ fontSize: 13 }}>{lang === "ru" ? a.ru : a.sr}</span>
           </button>
         ))}
@@ -337,13 +343,15 @@ function StepStops({ t, lang, meta, stops, setStops, stopInput, setStopInput }) 
         <input value={stopInput} placeholder={t.stopPlaceholder}
           onChange={(e) => setStopInput(e.target.value)}
           onKeyDown={(e) => { if (e.key === "Enter") { add(stopInput); setStopInput(""); } }} />
-        <button aria-label="+" onClick={() => { add(stopInput); setStopInput(""); }}>+</button>
+        <button aria-label="+" onClick={() => { add(stopInput); setStopInput(""); }}>
+          <Icon name="plus" size={20} />
+        </button>
       </div>
       {stops.length > 0 && (
         <div className="chips">
           {stops.map((s) => (
             <button key={s} className="chip stop" onClick={() => setStops(stops.filter((x) => x !== s))}>
-              {s} <span className="x">✕</span>
+              {s} <Icon name="x" size={13} className="xi" />
             </button>
           ))}
         </div>
@@ -356,7 +364,7 @@ function StepStops({ t, lang, meta, stops, setStops, stopInput, setStopInput }) 
           return (
             <button key={name} className={`chip ${on ? "stop" : ""}`}
               onClick={() => (on ? setStops(stops.filter((x) => x.toLowerCase() !== name.toLowerCase())) : add(name))}>
-              {on ? <>{name} <span className="x">✕</span></> : <>+ {name}</>}
+              {on ? <>{name} <Icon name="x" size={13} className="xi" /></> : <>+ {name}</>}
             </button>
           );
         })}
@@ -372,8 +380,8 @@ function StepEquip({ lang, meta, equipment, setEquipment }) {
     <div className="grid3">
       {list.map((e) => (
         <button key={e.id} className={`tile ${equipment.includes(e.id) ? "on" : ""}`} onClick={() => toggle(e.id)}>
-          {equipment.includes(e.id) && <span className="check">✓</span>}
-          <span className="emoji">{e.emoji}</span>
+          {equipment.includes(e.id) && <span className="check"><Icon name="check" size={12} stroke={3} /></span>}
+          <span className="ticon"><Icon name={e.id} size={26} /></span>
           <span className="t" style={{ fontSize: 13 }}>{lang === "ru" ? e.ru : e.sr}</span>
         </button>
       ))}
@@ -391,13 +399,13 @@ function Building({ t }) {
   const rows = [t.b1, t.b2, t.b3, t.b4];
   return (
     <main className="building">
-      <div className="build-icon">🥗</div>
+      <div className="build-icon"><Icon name="salad" size={40} /></div>
       <h2>{t.building}</h2>
       <p className="sub">{t.buildSub}</p>
       <div className="checklist">
         {rows.map((r, i) => (
           <div key={i} className={`checkrow ${phase > i ? "done" : phase === i ? "active" : ""}`}>
-            <span className="ring">{phase > i ? "✓" : ""}</span>
+            <span className="ring">{phase > i ? <Icon name="check" size={12} stroke={3} /> : ""}</span>
             <span className="t">{r}</span>
           </div>
         ))}
@@ -407,7 +415,7 @@ function Building({ t }) {
 }
 
 /* ---------------- Plan ---------------- */
-function PlanView({ t, lang, plan, storeName, onDay, onShop, onNew, onShare }) {
+function PlanView({ t, plan, storeName, onDay, onShop, onNew, onShare }) {
   const over = plan.total > plan.params.budget;
   const frac = Math.min(1, plan.total / plan.params.budget);
   const R = 44, C = 2 * Math.PI * R;
@@ -449,7 +457,7 @@ function PlanView({ t, lang, plan, storeName, onDay, onShop, onNew, onShare }) {
           <span className="n">{t.positions(plan.positions)}</span>
           {t.openList}
         </span>
-        <span className="arr">›</span>
+        <Icon name="right" size={20} />
       </button>
       <div className="daylist">
         {DAY_IDS.map((d, i) => {
@@ -478,7 +486,7 @@ function PlanView({ t, lang, plan, storeName, onDay, onShop, onNew, onShare }) {
 }
 
 /* ---------------- Day ---------------- */
-function DayView({ t, lang, plan, dayIdx, setDayIdx, onBack, onSwap }) {
+function DayView({ t, lang, plan, dayIdx, setDayIdx, onBack, onSwap, onOpen }) {
   const d = DAY_IDS[dayIdx];
   const day = plan.days[d];
   const [spinning, setSpinning] = useState("");
@@ -508,24 +516,26 @@ function DayView({ t, lang, plan, dayIdx, setDayIdx, onBack, onSwap }) {
         return (
           <section className="mealgroup" key={m}>
             <div className="glabel">
-              <span>{MEAL_EMOJI[m]}</span>
+              <Icon name={MEAL_ICON[m]} size={15} />
               <span>{groups[m]} · {meal.family ? t.forFamily : t.forYou}</span>
             </div>
-            <div className="mealcard">
-              <span className="mi">{meal.emoji}</span>
+            <div className="mealcard" role="button" tabIndex={0}
+              onClick={() => onOpen(meal.id, meal.servings)}
+              onKeyDown={(e) => { if (e.key === "Enter") onOpen(meal.id, meal.servings); }}>
+              <span className="mi"><Icon name={meal.icon} size={26} /></span>
               <span className="mid">
                 <span className="mn" style={{ display: "block" }}>{lang === "ru" ? meal.ru : meal.sr}</span>
                 <span className="meta">
-                  <span>⏱ {meal.time} {t.min}</span>
-                  <span>👥 {meal.servings}</span>
-                  <span>{fmt(meal.kcal)} kcal</span>
+                  <span><Icon name="clock" size={13} /> {meal.time} {t.min}</span>
+                  <span><Icon name="people" size={13} /> {meal.servings}</span>
+                  <span><Icon name="fire" size={13} /> {fmt(meal.kcal)} kcal</span>
                 </span>
               </span>
               <span className="right">
                 <span className="price">{fmt(meal.cost)} {t.cur}</span>
                 <button className={`swapbtn ${spinning === m ? "spin" : ""}`} aria-label={t.swap}
-                  onClick={() => { setSpinning(m); setTimeout(() => setSpinning(""), 500); onSwap(d, m); }}>
-                  ⟳
+                  onClick={(e) => { e.stopPropagation(); setSpinning(m); setTimeout(() => setSpinning(""), 500); onSwap(d, m); }}>
+                  <Icon name="swap" size={15} />
                 </button>
               </span>
             </div>
@@ -533,6 +543,52 @@ function DayView({ t, lang, plan, dayIdx, setDayIdx, onBack, onSwap }) {
         );
       })}
     </main>
+  );
+}
+
+/* ---------------- Recipe sheet ---------------- */
+function RecipeSheet({ t, lang, recipe, onClose }) {
+  const { data, servings } = recipe;
+  const name = lang === "ru" ? data.ru : data.sr;
+  const steps = data.steps?.[lang] ?? [];
+  const qty = (ing) => {
+    const total = ing.qty * servings;
+    if (ing.unit === "pcs") return `${Math.max(1, Math.round(total))} ${t.pcs}`;
+    return `${Math.round(total)} ${ing.unit === "ml" ? "ml" : "g"}`;
+  };
+  return (
+    <div className="sheet-wrap" onClick={onClose}>
+      <div className="sheet" onClick={(e) => e.stopPropagation()} role="dialog" aria-label={name}>
+        <div className="sheet-grab" />
+        <div className="sheet-head">
+          <span className="mi"><Icon name={data.icon} size={26} /></span>
+          <div className="sheet-title">
+            <h3>{name}</h3>
+            <div className="meta">
+              <span><Icon name="clock" size={13} /> {data.time} {t.min}</span>
+              <span><Icon name="people" size={13} /> {servings}</span>
+              <span><Icon name="fire" size={13} /> {fmt(data.kcal)} kcal</span>
+            </div>
+          </div>
+          <button className="iconbtn" onClick={onClose} aria-label={t.close}><Icon name="x" size={18} /></button>
+        </div>
+        <div className="sheet-body">
+          <div className="sheet-label">{t.ingredients}</div>
+          <ul className="ing-list">
+            {data.ingredients.map((ing) => (
+              <li key={ing.id}>
+                <span>{lang === "ru" ? ing.ru : ing.sr}</span>
+                <span className="q">{qty(ing)}</span>
+              </li>
+            ))}
+          </ul>
+          <div className="sheet-label">{t.steps}</div>
+          <ol className="step-list">
+            {steps.map((s, i) => <li key={i}>{s}</li>)}
+          </ol>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -566,13 +622,13 @@ function ShopView({ t, lang, plan, checked, setChecked, onBack }) {
         return (
           <section className="shopcat" key={c}>
             <div className="clabel">
-              <span>{CAT_EMOJI[c]} {t[CAT_KEY[c]]}</span>
+              <span className="cl"><Icon name={`cat-${c}`} size={15} /> {t[CAT_KEY[c]]}</span>
               <span>{cdone}/{list.length}</span>
             </div>
             <div className="shopitems">
               {list.map((i) => (
                 <button key={i.id} className={`shopitem ${checked[i.id] ? "done" : ""}`} onClick={() => toggle(i.id)}>
-                  <span className="box">{checked[i.id] ? "✓" : ""}</span>
+                  <span className="box">{checked[i.id] ? <Icon name="check" size={13} stroke={3} /> : ""}</span>
                   <span className="mid">
                     <span className="n" style={{ display: "block" }}>{lang === "ru" ? i.ru : i.sr}</span>
                     <span className="q" style={{ display: "block" }}>

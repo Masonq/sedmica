@@ -246,3 +246,24 @@ RECIPES = [
 ]
 
 ING_BY_ID = {i["id"]: i for i in INGREDIENTS}
+
+RECIPE_ICON = {
+    "oatmeal_banana": "porridge", "oatmeal_apple": "porridge", "syrniki": "pancakes",
+    "scrambled_veg": "egg", "omelet_cheese": "egg", "pancakes": "pancakes",
+    "semolina": "porridge", "toast_tuna": "sandwich", "toast_cheese": "sandwich",
+    "yogurt_bowl": "cup", "cottage_bowl": "cup", "smoothie": "cup", "proja": "pie",
+    "egg_toast_avocado": "egg", "fr_toast": "sandwich", "mushroom_omelet": "egg",
+    "chicken_soup": "soup", "borsch": "soup", "pasulj": "soup", "lentil_soup": "soup",
+    "chicken_rice": "rice", "chicken_buckwheat": "patty", "pasta_bolognese": "pasta",
+    "pasta_tuna": "pasta", "hake_potato": "fish", "djuvec": "stew", "stuffed_pepper": "stew",
+    "musaka": "casserole", "rice_liver": "rice", "chick_stew": "stew", "turkey_veg": "stew",
+    "potato_mush_stew": "stew", "pork_stew": "stew", "spinach_rice": "rice",
+    "cutlets_mash": "patty", "chicken_bake": "chicken", "fish_cutlets": "fish",
+    "buck_mushroom": "rice", "sarma_lazy": "stew", "tortilla_chicken": "wrap",
+    "pilav": "rice", "veg_stew_dinner": "stew", "mac_cheese": "pasta",
+    "baked_fish_veg": "fish", "beans_sausage_free": "stew", "zapekanka": "casserole",
+    "potato_pancakes": "pancakes", "tofu_rice": "rice", "grill_chicken_salad": "salad",
+    "egg_fried_rice": "rice", "sardine_potato": "fish", "pita_zeljanica": "pie",
+}
+for _r in RECIPES:
+    _r["icon"] = RECIPE_ICON.get(_r["id"], "stew")
