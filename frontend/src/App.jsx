@@ -44,7 +44,7 @@ function Confetti() {
     left: 4 + Math.random() * 92,
     delay: Math.random() * 0.45,
     dur: 1.3 + Math.random() * 0.9,
-    color: ["#4ade80", "#f2b35c", "#a7f3b8", "#22c55e", "#e8c98a"][i % 5],
+    color: ["#ff6b3d", "#e8a23d", "#ff8a60", "#f5f3f1", "#f5511e"][i % 5],
     rot: Math.random() * 360,
     size: 6 + Math.random() * 5,
   })), []);
@@ -471,65 +471,38 @@ function Building({ t }) {
 }
 
 /* ---------------- Plan ---------------- */
+const DISH_PHOTO = {
+  chicken: "chicken", patty: "chicken", wrap: "chicken", rice: "chicken",
+  pasta: "pasta", casserole: "pasta", stew: "pasta", soup: "pasta", pie: "pasta",
+  fish: "fish", salad: "fish",
+  porridge: "oat", cup: "oat", pancakes: "oat", egg: "oat", sandwich: "oat",
+};
+const photoFor = (meals) => {
+  const m = meals.dinner ?? meals.lunch ?? meals.breakfast;
+  return `/img/${DISH_PHOTO[m?.icon] ?? "chicken"}.jpg`;
+};
+
 function PlanView({ t, plan, storeName, onDay, onShop, onNew, onShare }) {
   const over = plan.total > plan.params.budget;
   const frac = Math.min(1, plan.total / plan.params.budget);
-  const R = 44, C = 2 * Math.PI * R;
   const shownTotal = useCountUp(plan.total, 900, true);
   const [drawn, setDrawn] = useState(false);
   useEffect(() => { const id = requestAnimationFrame(() => setDrawn(true)); return () => cancelAnimationFrame(id); }, []);
   return (
     <main>
       {!over && <Confetti />}
-      <div className="plan-head">
-        <h1>{t.planTitle}</h1>
-        <div className="from">{t.fromStore(storeName)} · {t.madeFor(plan.params.city ?? "Beograd")}</div>
+      <div className="hero-plan">
+        <div className="kicker">{over ? t.heroOver : t.heroDone}</div>
+        <div className="bigsum">{fmt(shownTotal)}<small>{t.cur}</small></div>
+        <div className="herosub">
+          {over ? t.overSub : `${t.budgetLine(fmt(plan.params.budget), fmt(plan.params.budget - plan.total))}`}
+        </div>
+        <div className="heroBar"><i style={{ width: drawn ? `${frac * 100}%` : "0%", background: over ? "var(--amber)" : "var(--acc)" }} /></div>
       </div>
-      <section className={`summary ${over ? "over" : ""}`}>
-        <div className={`donut ${over ? "over" : ""}`} role="img" aria-label={`${fmt(plan.total)} ${t.cur}`}>
-          <svg width="104" height="104" viewBox="0 0 104 104">
-            <defs>
-              <linearGradient id="rg" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0%" stopColor="#a7f3b8" />
-                <stop offset="100%" stopColor="#22c55e" />
-              </linearGradient>
-              <linearGradient id="rga" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0%" stopColor="#f6d49a" />
-                <stop offset="100%" stopColor="#e09a3c" />
-              </linearGradient>
-            </defs>
-            <circle className="track" cx="52" cy="52" r={R} fill="none" strokeWidth="10" />
-            <circle className="val" cx="52" cy="52" r={R} fill="none" strokeWidth="10"
-              strokeDasharray={C} strokeDashoffset={drawn ? C * (1 - frac) : C} />
-          </svg>
-          <div className="center">
-            <b>{fmt(shownTotal)}</b>
-            <span>{t.cur} {t.total}</span>
-          </div>
-        </div>
-        <div className="text">
-          {over ? (
-            <>
-              <div className="big">{t.fitOver(fmt(plan.total))}</div>
-              <div className="small">{t.overSub}</div>
-            </>
-          ) : (
-            <>
-              <div className="big">{t.fitOk(fmt(plan.total))}</div>
-              <div className="small">{t.leftover(fmt(plan.params.budget - plan.total))}</div>
-            </>
-          )}
-        </div>
-      </section>
       <div className="statrow">
-        <div className="stat">
-          <Icon name="fire" size={15} />
-          <span>{t.kcal(fmt(plan.kcal_day))}</span>
-        </div>
-        <div className="stat">
-          <Icon name="people" size={15} />
-          <span>{t.perPerson(fmt(plan.total / Math.max(1, plan.params.people)))}</span>
-        </div>
+        <div className="stat"><b>{fmt(plan.kcal_day)}</b><span>{t.statKcal}</span></div>
+        <div className="stat"><b>{fmt(plan.total / Math.max(1, plan.params.people))}</b><span>{t.statPerHead}</span></div>
+        <div className="stat"><b>{DAY_IDS.reduce((s, d) => s + Object.keys(plan.days[d].meals).length, 0)}</b><span>{t.statDishes}</span></div>
       </div>
       <button className="listbtn" onClick={onShop}>
         <span>
@@ -538,23 +511,36 @@ function PlanView({ t, plan, storeName, onDay, onShop, onNew, onShare }) {
         </span>
         <Icon name="right" size={20} />
       </button>
+      <div className="seclabel">{t.secDays}</div>
       <div className="daylist">
         {DAY_IDS.map((d, i) => {
           const day = plan.days[d];
-          const icons = MEAL_ORDER.map((m) => day.meals[m]?.icon).filter(Boolean);
+          const lang2 = document.documentElement.lang;
+          const dinner = day.meals.dinner ?? day.meals.lunch ?? day.meals.breakfast;
+          const dishName = dinner ? (lang2 === "ru" ? dinner.ru : dinner.sr) : "";
+          if (i < 2) {
+            return (
+              <button className="bigday" key={d} onClick={() => onDay(i)}
+                style={{ backgroundImage: `url(${photoFor(day.meals)})` }}>
+                <span className="scrim" />
+                <span className="ov">
+                  <span className="row1">
+                    <span className="dl">{t.days[i].toUpperCase()} · {t.dinner.toUpperCase()}</span>
+                    <span className="pr">{fmt(day.cost)} {t.cur}</span>
+                  </span>
+                  <span className="dish">{dishName}</span>
+                </span>
+              </button>
+            );
+          }
           return (
             <button className="daycard" key={d} onClick={() => onDay(i)}>
-              <span className={`dchip ${i >= 5 ? "we" : ""}`}>{t.daysShort[i]}</span>
+              <span className="thumb" style={{ backgroundImage: `url(${photoFor(day.meals)})` }} />
               <span className="mid">
-                <span className="dn" style={{ display: "block" }}>{t.days[i]}</span>
-                <span className="dicons">
-                  {icons.map((ic, k) => <Icon key={k} name={ic} size={15} />)}
-                </span>
+                <span className="dl">{t.daysShort[i].toUpperCase()}</span>
+                <span className="dn" style={{ display: "block" }}>{dishName}</span>
               </span>
-              <span className="cost">
-                <span className="pricechip">{fmt(day.cost)} {t.cur}</span>
-                <span>{t.perPortion(fmt(day.cost / Math.max(1, plan.params.people)))}</span>
-              </span>
+              <span className="pr">{fmt(day.cost)} {t.cur}</span>
             </button>
           );
         })}
