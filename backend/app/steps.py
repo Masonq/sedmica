@@ -130,6 +130,22 @@ STEPS = {
                "steps": ["Iseci šampinjone na listiće.", "Prži ih na srednjoj vatri 5–6 minuta dok voda ne ispari i dok ne porumene. Posoli na kraju.", "Umuti jaja sa prstohvatom soli i prelij pečurke.", "Smanji vatru, poklopi i spremaj 4–5 minuta.", "Posluži uz hleb."],
                "tip": "Pečurke se sole na kraju prženja — inače puste vodu i dinstaju se."},
     },
+    "rice_porridge": {
+        "ru": {"desc": "Молочная рисовая каша — сладкая, томлёная, как сутлияш.",
+               "steps": ["Промой рис и залей стаканом воды, вари 10 минут до впитывания.", "Влей молоко с сахаром и щепоткой соли.", "Томи на слабом огне 12–15 минут, помешивая.", "Сними с огня, добавь масло и дай постоять 5 минут."],
+               "tip": "Щепотка ванили или корицы — и получится настоящий сутлияш."},
+        "sr": {"desc": "Sutlijaš — sladak, krčkan pirinač na mleku.",
+               "steps": ["Operi pirinač, nalij čašu vode i kuvaj 10 minuta dok ne upije.", "Dolij mleko sa šećerom i prstohvatom soli.", "Krčkaj na tihoj vatri 12–15 minuta uz mešanje.", "Skloni sa vatre, dodaj maslac i ostavi 5 minuta."],
+               "tip": "Prstohvat vanile ili cimeta — i dobijaš pravi sutlijaš."},
+    },
+    "eggs_potato": {
+        "ru": {"desc": "Румяный жареный картофель с яичницей — сытный завтрак без хлеба.",
+               "steps": ["Нарежь картофель тонкими дольками.", "Жарь на масле на среднем огне 12–15 минут до румяности, посоли.", "Добавь лук на пару минут.", "Вбей яйца поверх картофеля и жарь под крышкой 3–4 минуты."],
+               "tip": "Не мешай картофель первые 5 минут — схватится корочка."},
+        "sr": {"desc": "Rumeni prženi krompir sa kajganom — zasitan doručak bez hleba.",
+               "steps": ["Iseci krompir na tanke kriške.", "Prži na ulju na srednjoj vatri 12–15 minuta do rumene boje, posoli.", "Dodaj luk na par minuta.", "Ubaci jaja preko krompira i prži poklopljeno 3–4 minuta."],
+               "tip": "Ne mešaj krompir prvih 5 minuta — uhvatiće koricu."},
+    },
     "chicken_soup": {
         "ru": {"desc": "Прозрачный золотистый бульон, домашняя вермишель и мягкая курица.",
                "steps": ["Залей бёдра 2 литрами холодной воды, доведи до кипения и сними пену.", "Вари на слабом огне 25 минут, затем достань мясо и разбери на кусочки.", "Добавь в бульон картофель кубиками, морковь кружочками и целую луковицу. Вари 10 минут.", "Верни мясо, всыпь вермишель и вари ещё 5 минут. Лук выброси.", "Посоли по вкусу и подавай, щедро посыпав зеленью."],

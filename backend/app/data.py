@@ -171,6 +171,10 @@ RECIPES = [
       [["stove"]], {"bread": 70, "eggs": 1, "milk": 50, "oil": 8, "sugar": 8}),
     R("mushroom_omelet", "Омлет с шампиньонами", "Omlet sa šampinjonima", "breakfast", 15, 330, "🍄",
       [["stove"]], {"eggs": 2, "mushrooms": 50, "oil": 8, "bread": 40}),
+    R("rice_porridge", "Рисовая каша на молоке", "Sutlijaš (pirinač na mleku)", "breakfast", 25, 320, "🍚",
+      [["stove", "multi"]], {"rice": 55, "milk": 220, "sugar": 12, "butter": 5}),
+    R("eggs_potato", "Яичница с картофелем", "Kajgana sa krompirom", "breakfast", 20, 360, "🍳",
+      [["stove"]], {"eggs": 2, "potato": 140, "onion": 15, "oil": 10}),
 
     # ---------- LUNCH ----------
     R("chicken_soup", "Куриный суп с вермишелью", "Pileća supa sa rezancima", "lunch", 40, 320, "🍜",

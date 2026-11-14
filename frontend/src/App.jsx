@@ -135,12 +135,14 @@ export default function App() {
 
   async function swap(day, meal) {
     try {
+      const before = plan?.week?.[day]?.[meal];
       const { plan: p } = await api(`/plan/${token}/swap`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ day, meal }),
       });
       setPlan(p);
+      if (before && p.week[day][meal] === before) showToast(t.noSwap);
     } catch { showToast(t.error); }
   }
 
