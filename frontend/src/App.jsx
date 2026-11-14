@@ -502,9 +502,18 @@ function PlanView({ t, plan, storeName, onDay, onShop, onNew, onShare }) {
               <div className="small">{t.leftover(fmt(plan.params.budget - plan.total))}</div>
             </>
           )}
-          <div className="kcal">{t.kcal(fmt(plan.kcal_day))}</div>
         </div>
       </section>
+      <div className="statrow">
+        <div className="stat">
+          <Icon name="fire" size={15} />
+          <span>{t.kcal(fmt(plan.kcal_day))}</span>
+        </div>
+        <div className="stat">
+          <Icon name="people" size={15} />
+          <span>{t.perPerson(fmt(plan.total / Math.max(1, plan.params.people)))}</span>
+        </div>
+      </div>
       <button className="listbtn" onClick={onShop}>
         <span>
           <span className="n">{t.positions(plan.positions)}</span>
@@ -515,15 +524,18 @@ function PlanView({ t, plan, storeName, onDay, onShop, onNew, onShare }) {
       <div className="daylist">
         {DAY_IDS.map((d, i) => {
           const day = plan.days[d];
+          const icons = MEAL_ORDER.map((m) => day.meals[m]?.icon).filter(Boolean);
           return (
             <button className="daycard" key={d} onClick={() => onDay(i)}>
-              <span className="dchip">{t.daysShort[i]}</span>
+              <span className={`dchip ${i >= 5 ? "we" : ""}`}>{t.daysShort[i]}</span>
               <span className="mid">
                 <span className="dn" style={{ display: "block" }}>{t.days[i]}</span>
-                <span className="dm" style={{ display: "block" }}>{t.threeMeals}</span>
+                <span className="dicons">
+                  {icons.map((ic, k) => <Icon key={k} name={ic} size={15} />)}
+                </span>
               </span>
               <span className="cost">
-                <b>{fmt(day.cost)} {t.cur}</b>
+                <span className="pricechip">{fmt(day.cost)} {t.cur}</span>
                 <span>{t.perPortion(fmt(day.cost / Math.max(1, plan.params.people)))}</span>
               </span>
             </button>
@@ -572,7 +584,7 @@ function DayView({ t, lang, plan, dayIdx, setDayIdx, onBack, onSwap, onOpen }) {
       <div className="daytotal">
         <span className="l">{t.dayWhole}</span>
         <span className="r">
-          <b>{fmt(day.cost)} {t.cur}</b>
+          <span className="pricechip">{fmt(day.cost)} {t.cur}</span>
           <span>{t.perPortion(fmt(day.cost / Math.max(1, plan.params.people)))}</span>
         </span>
       </div>
@@ -598,7 +610,7 @@ function DayView({ t, lang, plan, dayIdx, setDayIdx, onBack, onSwap, onOpen }) {
                 </span>
               </span>
               <span className="right">
-                <span className="price">{fmt(meal.cost)} {t.cur}</span>
+                <span className="pricechip">{fmt(meal.cost)} {t.cur}</span>
                 <button className={`swapbtn ${spinning === m ? "spin" : ""}`} aria-label={t.swap}
                   onClick={(e) => { e.stopPropagation(); setSpinning(m); setTimeout(() => setSpinning(""), 500); onSwap(d, m); }}>
                   <Icon name="swap" size={15} />
