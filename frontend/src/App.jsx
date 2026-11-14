@@ -44,7 +44,7 @@ function Confetti() {
     left: 4 + Math.random() * 92,
     delay: Math.random() * 0.45,
     dur: 1.3 + Math.random() * 0.9,
-    color: ["#3a7d44", "#b86e14", "#6fbf78", "#e0a455", "#2d6336"][i % 5],
+    color: ["#4ade80", "#f2b35c", "#a7f3b8", "#22c55e", "#e8c98a"][i % 5],
     rot: Math.random() * 360,
     size: 6 + Math.random() * 5,
   })), []);
@@ -72,7 +72,7 @@ function useLocal(key, init) {
 
 export default function App() {
   const [lang, setLang] = useLocal("sed_lang", navigator.language?.startsWith("ru") ? "ru" : "sr");
-  const [theme, setTheme] = useLocal("sed_theme", matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+  const [theme, setTheme] = useLocal("sed_theme", "dark");
   const t = T[lang];
   useEffect(() => { document.documentElement.dataset.theme = theme; }, [theme]);
   useEffect(() => { document.documentElement.lang = lang; }, [lang]);
@@ -230,7 +230,10 @@ function Landing({ t, meta, city, setCity, onStart }) {
   const week = ["pancakes", "soup", "fish", "stew", "pasta", "chicken", "pie"];
   return (
     <main className="hero">
-      <h1>{t.heroTitle}</h1>
+      <h1>
+        {t.heroTitle.split("\n")[0]}{"\n"}
+        <span className="hl">{t.heroTitle.split("\n")[1]}</span>
+      </h1>
       <p>{t.heroSub}</p>
       <div className="week-strip" aria-hidden="true">
         {t.daysShort.map((d, i) => (
@@ -317,11 +320,11 @@ function StepPeople({ t, people, setPeople }) {
   return (
     <div>
       <div className="stepper">
-        <button onClick={() => setPeople(Math.max(1, people - 1))} disabled={people <= 1} aria-label="−">
+        <button className="sbtn" onClick={() => setPeople(Math.max(1, people - 1))} disabled={people <= 1} aria-label="−">
           <Icon name="minus" size={22} />
         </button>
         <span className="num">{people}</span>
-        <button onClick={() => setPeople(Math.min(8, people + 1))} disabled={people >= 8} aria-label="+">
+        <button className="sbtn" onClick={() => setPeople(Math.min(8, people + 1))} disabled={people >= 8} aria-label="+">
           <Icon name="plus" size={22} />
         </button>
       </div>
@@ -485,6 +488,16 @@ function PlanView({ t, plan, storeName, onDay, onShop, onNew, onShare }) {
       <section className={`summary ${over ? "over" : ""}`}>
         <div className={`donut ${over ? "over" : ""}`} role="img" aria-label={`${fmt(plan.total)} ${t.cur}`}>
           <svg width="104" height="104" viewBox="0 0 104 104">
+            <defs>
+              <linearGradient id="rg" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stopColor="#a7f3b8" />
+                <stop offset="100%" stopColor="#22c55e" />
+              </linearGradient>
+              <linearGradient id="rga" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stopColor="#f6d49a" />
+                <stop offset="100%" stopColor="#e09a3c" />
+              </linearGradient>
+            </defs>
             <circle className="track" cx="52" cy="52" r={R} fill="none" strokeWidth="10" />
             <circle className="val" cx="52" cy="52" r={R} fill="none" strokeWidth="10"
               strokeDasharray={C} strokeDashoffset={drawn ? C * (1 - frac) : C} />
