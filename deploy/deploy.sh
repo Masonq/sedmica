@@ -2,10 +2,13 @@
 # Sedmica: first install + update. Run as root on the VPS.
 set -e
 APP=/var/www/sedmica
+git config --global --add safe.directory /var/www/sedmica 2>/dev/null || true
 REPO=https://github.com/Masonq/sedmica.git
 if [ ! -d "$APP/.git" ]; then git clone "$REPO" "$APP"; fi
 cd "$APP"
-git fetch origin && git reset --hard origin/main
+git fetch origin
+git reset --hard origin/main
+echo "DEPLOYED COMMIT: $(git log --oneline -1)"
 if [ ! -d .venv ]; then python3 -m venv .venv; fi
 .venv/bin/pip install -q -r backend/requirements.txt
 cd frontend && npm install --silent && npm run build && cd ..
