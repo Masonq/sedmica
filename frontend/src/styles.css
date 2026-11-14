@@ -845,3 +845,15 @@ input[type="range"]::-webkit-slider-thumb {
 .shopitem .p { color: var(--ink); font-family: var(--display); font-weight: 600; font-size: 12.5px; }
 .shopitem.done .p { color: var(--ink3); }
 .shop-progress.alldone { border-color: var(--acc); }
+
+.mealcard .mi.photo { background-size: cover; background-position: center; border: 0; }
+.sheet-photo {
+  height: 150px;
+  border-radius: 18px;
+  margin: 10px 16px 0;
+  background-size: cover;
+  background-position: center;
+  flex: none;
+}
+.sheet-head { border-bottom: 0; padding-bottom: 10px; }
+.sheet-body { border-top: 1px solid var(--line); }

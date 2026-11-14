@@ -471,15 +471,11 @@ function Building({ t }) {
 }
 
 /* ---------------- Plan ---------------- */
-const DISH_PHOTO = {
-  chicken: "chicken", patty: "chicken", wrap: "chicken", rice: "chicken",
-  pasta: "pasta", casserole: "pasta", stew: "pasta", soup: "pasta", pie: "pasta",
-  fish: "fish", salad: "fish",
-  porridge: "oat", cup: "oat", pancakes: "oat", egg: "oat", sandwich: "oat",
-};
+const PHOTOS = new Set(["chicken", "patty", "wrap", "rice", "pasta", "casserole", "stew", "soup", "pie", "fish", "salad", "porridge", "cup", "pancakes", "egg", "sandwich"]);
+const dishPhoto = (icon) => `/img/${PHOTOS.has(icon) ? icon : "stew"}.jpg`;
 const photoFor = (meals) => {
   const m = meals.dinner ?? meals.lunch ?? meals.breakfast;
-  return `/img/${DISH_PHOTO[m?.icon] ?? "chicken"}.jpg`;
+  return dishPhoto(m?.icon);
 };
 
 function PlanView({ t, plan, storeName, onDay, onShop, onNew, onShare }) {
@@ -603,7 +599,7 @@ function DayView({ t, lang, plan, dayIdx, setDayIdx, onBack, onSwap, onOpen }) {
             <div className="mealcard" role="button" tabIndex={0}
               onClick={() => onOpen(meal.id, meal.servings)}
               onKeyDown={(e) => { if (e.key === "Enter") onOpen(meal.id, meal.servings); }}>
-              <span className="mi"><Icon name={meal.icon} size={26} /></span>
+              <span className="mi photo" style={{ backgroundImage: `url(${dishPhoto(meal.icon)})` }} />
               <span className="mid">
                 <span className="mn" style={{ display: "block" }}>{lang === "ru" ? meal.ru : meal.sr}</span>
                 <span className="meta">
@@ -649,8 +645,9 @@ function RecipeSheet({ t, lang, recipe, onClose }) {
     <div className="sheet-wrap" onClick={onClose}>
       <div className="sheet" onClick={(e) => e.stopPropagation()} role="dialog" aria-label={name}>
         <div className="sheet-grab" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd} />
+        <div className="sheet-photo" style={{ backgroundImage: `url(${dishPhoto(data.icon)})` }}
+          onTouchStart={onTouchStart} onTouchEnd={onTouchEnd} />
         <div className="sheet-head" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
-          <span className="mi"><Icon name={data.icon} size={26} /></span>
           <div className="sheet-title">
             <h3>{name}</h3>
             <div className="meta">
