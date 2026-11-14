@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { T, plural, fmt, CAT_KEY } from "./i18n.js";
 import Icon from "./Icons.jsx";
 
@@ -15,6 +15,50 @@ async function api(path, opts) {
   const r = await fetch(API + path, opts);
   if (!r.ok) throw new Error("api " + r.status);
   return r.json();
+}
+
+function useCountUp(target, dur = 700, fromZero = false) {
+  const [v, setV] = useState(fromZero ? 0 : target);
+  const ref = useRef(fromZero ? 0 : target);
+  useEffect(() => {
+    const from = ref.current, to = target;
+    if (from === to) return;
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches) { ref.current = to; setV(to); return; }
+    const t0 = performance.now();
+    let raf;
+    const tick = (now) => {
+      const p = Math.min(1, (now - t0) / dur);
+      const e = 1 - Math.pow(1 - p, 3);
+      setV(Math.round(from + (to - from) * e));
+      if (p < 1) raf = requestAnimationFrame(tick);
+      else ref.current = to;
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [target, dur]);
+  return v;
+}
+
+function Confetti() {
+  const parts = useMemo(() => Array.from({ length: 22 }, (_, i) => ({
+    left: 4 + Math.random() * 92,
+    delay: Math.random() * 0.45,
+    dur: 1.3 + Math.random() * 0.9,
+    color: ["#3a7d44", "#b86e14", "#6fbf78", "#e0a455", "#2d6336"][i % 5],
+    rot: Math.random() * 360,
+    size: 6 + Math.random() * 5,
+  })), []);
+  return (
+    <div className="confetti" aria-hidden="true">
+      {parts.map((p, i) => (
+        <i key={i} style={{
+          left: `${p.left}%`, animationDelay: `${p.delay}s`, animationDuration: `${p.dur}s`,
+          background: p.color, width: p.size, height: p.size * 0.55,
+          transform: `rotate(${p.rot}deg)`,
+        }} />
+      ))}
+    </div>
+  );
 }
 
 function useLocal(key, init) {
@@ -122,7 +166,11 @@ export default function App() {
           <button className="iconbtn" onClick={() => setLang(lang === "sr" ? "ru" : "sr")} aria-label="Language">
             {lang === "sr" ? "RU" : "SR"}
           </button>
-          <button className="iconbtn" onClick={() => setTheme(theme === "dark" ? "light" : "dark")} aria-label="Theme">
+          <button className="iconbtn" onClick={() => {
+            document.documentElement.classList.add("tswitch");
+            setTimeout(() => document.documentElement.classList.remove("tswitch"), 450);
+            setTheme(theme === "dark" ? "light" : "dark");
+          }} aria-label="Theme">
             <Icon name={theme === "dark" ? "sun" : "moon"} size={19} />
           </button>
         </div>
@@ -285,13 +333,14 @@ function StepPeople({ t, people, setPeople }) {
 function StepBudget({ t, people, budget, setBudget }) {
   const min = 3000, max = 30000;
   const fill = ((budget - min) / (max - min)) * 100;
+  const shown = useCountUp(budget, 260);
   const perHead = budget / people;
   const mood = perHead < 2600 ? ["var(--red)", t.moodTight, t.moodTightS]
     : perHead < 4200 ? ["var(--green)", t.moodOk, t.moodOkS]
     : ["var(--amber)", t.moodSpare, t.moodSpareS];
   return (
     <div>
-      <div className="budget-big">{fmt(budget)}<small>{t.cur}</small></div>
+      <div className="budget-big">{fmt(shown)}<small>{t.cur}</small></div>
       <div className="budget-per">{t.perPerson(fmt(perHead))}</div>
       <input type="range" min={min} max={max} step={250} value={budget}
         style={{ "--fill": `${fill}%` }}
@@ -419,8 +468,12 @@ function PlanView({ t, plan, storeName, onDay, onShop, onNew, onShare }) {
   const over = plan.total > plan.params.budget;
   const frac = Math.min(1, plan.total / plan.params.budget);
   const R = 44, C = 2 * Math.PI * R;
+  const shownTotal = useCountUp(plan.total, 900, true);
+  const [drawn, setDrawn] = useState(false);
+  useEffect(() => { const id = requestAnimationFrame(() => setDrawn(true)); return () => cancelAnimationFrame(id); }, []);
   return (
     <main>
+      {!over && <Confetti />}
       <div className="plan-head">
         <h1>{t.planTitle}</h1>
         <div className="from">{t.fromStore(storeName)} · {t.madeFor(plan.params.city ?? "Beograd")}</div>
@@ -430,10 +483,10 @@ function PlanView({ t, plan, storeName, onDay, onShop, onNew, onShare }) {
           <svg width="104" height="104" viewBox="0 0 104 104">
             <circle className="track" cx="52" cy="52" r={R} fill="none" strokeWidth="10" />
             <circle className="val" cx="52" cy="52" r={R} fill="none" strokeWidth="10"
-              strokeDasharray={C} strokeDashoffset={C * (1 - frac)} />
+              strokeDasharray={C} strokeDashoffset={drawn ? C * (1 - frac) : C} />
           </svg>
           <div className="center">
-            <b>{fmt(plan.total)}</b>
+            <b>{fmt(shownTotal)}</b>
             <span>{t.cur} {t.total}</span>
           </div>
         </div>
@@ -490,9 +543,21 @@ function DayView({ t, lang, plan, dayIdx, setDayIdx, onBack, onSwap, onOpen }) {
   const d = DAY_IDS[dayIdx];
   const day = plan.days[d];
   const [spinning, setSpinning] = useState("");
+  const touch = useRef(null);
   const groups = { breakfast: t.breakfast, lunch: t.lunch, dinner: t.dinner };
+  const onTouchStart = (e) => { touch.current = { x: e.touches[0].clientX, y: e.touches[0].clientY }; };
+  const onTouchEnd = (e) => {
+    if (!touch.current) return;
+    const dx = e.changedTouches[0].clientX - touch.current.x;
+    const dy = e.changedTouches[0].clientY - touch.current.y;
+    touch.current = null;
+    if (Math.abs(dx) > 56 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+      if (dx < 0 && dayIdx < 6) setDayIdx(dayIdx + 1);
+      if (dx > 0 && dayIdx > 0) setDayIdx(dayIdx - 1);
+    }
+  };
   return (
-    <main>
+    <main onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
       <div className="stephead">
         <button className="backbtn" onClick={onBack}>‹ {t.back}</button>
         <span className="label">{fmt(day.cost)} {t.cur}</span>
@@ -503,6 +568,7 @@ function DayView({ t, lang, plan, dayIdx, setDayIdx, onBack, onSwap, onOpen }) {
           <button key={s} className={i === dayIdx ? "on" : ""} onClick={() => setDayIdx(i)}>{s}</button>
         ))}
       </div>
+      <div className="daywrap" key={d}>
       <div className="daytotal">
         <span className="l">{t.dayWhole}</span>
         <span className="r">
@@ -542,6 +608,7 @@ function DayView({ t, lang, plan, dayIdx, setDayIdx, onBack, onSwap, onOpen }) {
           </section>
         );
       })}
+      </div>
     </main>
   );
 }
@@ -549,6 +616,12 @@ function DayView({ t, lang, plan, dayIdx, setDayIdx, onBack, onSwap, onOpen }) {
 /* ---------------- Recipe sheet ---------------- */
 function RecipeSheet({ t, lang, recipe, onClose }) {
   const { data, servings } = recipe;
+  const touch = useRef(null);
+  const onTouchStart = (e) => { touch.current = e.touches[0].clientY; };
+  const onTouchEnd = (e) => {
+    if (touch.current !== null && e.changedTouches[0].clientY - touch.current > 64) onClose();
+    touch.current = null;
+  };
   const name = lang === "ru" ? data.ru : data.sr;
   const content = data.steps?.[lang] ?? {};
   const steps = content.steps ?? [];
@@ -560,8 +633,8 @@ function RecipeSheet({ t, lang, recipe, onClose }) {
   return (
     <div className="sheet-wrap" onClick={onClose}>
       <div className="sheet" onClick={(e) => e.stopPropagation()} role="dialog" aria-label={name}>
-        <div className="sheet-grab" />
-        <div className="sheet-head">
+        <div className="sheet-grab" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd} />
+        <div className="sheet-head" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
           <span className="mi"><Icon name={data.icon} size={26} /></span>
           <div className="sheet-title">
             <h3>{name}</h3>
@@ -608,17 +681,19 @@ function ShopView({ t, lang, plan, checked, setChecked, onBack }) {
   const cats = ["meat", "dairy", "veg", "grocery", "other"];
   const byCat = (c) => items.filter((i) => i.cat === c);
   const toggle = (id) => setChecked({ ...checked, [id]: !checked[id] });
+  const allDone = items.length > 0 && done === items.length;
   return (
     <main>
+      {allDone && <Confetti />}
       <div className="stephead">
         <button className="backbtn" onClick={onBack}>‹ {t.back}</button>
         <span className="label">{fmt(plan.total)} {t.cur}</span>
       </div>
       <h2 style={{ fontSize: 24, fontWeight: 700, marginTop: 10 }}>{t.shopTitle}</h2>
-      <div className="shop-progress">
+      <div className={`shop-progress ${allDone ? "alldone" : ""}`}>
         <div className="row">
-          <span className="big">{t.bought(done, items.length)}</span>
-          <span className="sub">{t.keepGoing}</span>
+          <span className="big">{allDone ? t.allDone : t.bought(done, items.length)}</span>
+          {!allDone && <span className="sub">{t.keepGoing}</span>}
         </div>
         <div className="bar"><i style={{ width: `${(done / Math.max(1, items.length)) * 100}%` }} /></div>
         <div className="cart">{t.inCart(fmt(cartSum))}</div>
