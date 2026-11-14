@@ -1,0 +1,13 @@
+[Unit]
+Description=Sedmica API
+After=network.target
+
+[Service]
+User=www-data
+WorkingDirectory=/var/www/sedmica/backend
+Environment=SEDMICA_DB=/var/www/sedmica/backend/sedmica.db
+ExecStart=/var/www/sedmica/.venv/bin/uvicorn app.main:app --host 0.0.0.0 --port 8102
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
