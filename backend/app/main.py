@@ -102,5 +102,8 @@ if os.path.isdir(DIST):
         full = os.path.join(DIST, path)
         if path and os.path.isfile(full):
             return FileResponse(full)
+        if path and os.path.isdir(full) and os.path.isfile(os.path.join(full, "index.html")):
+            return FileResponse(os.path.join(full, "index.html"),
+                                headers={"Cache-Control": "no-cache"})
         return FileResponse(os.path.join(DIST, "index.html"),
                             headers={"Cache-Control": "no-cache, no-store, must-revalidate"})

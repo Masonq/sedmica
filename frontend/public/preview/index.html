@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sedmica — выбор дизайна</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700;800&family=Unbounded:wght@600;700&display=swap&subset=cyrillic" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#17181c;font-family:"Golos Text",system-ui,sans-serif;color:#fff;padding:28px 0 60px}
+.pick{max-width:430px;margin:0 auto;padding:0 20px}
+.pick h1{font-family:Unbounded;font-size:20px;margin-bottom:6px}
+.pick p{color:#9aa;font-size:14px;margin-bottom:26px}
+.vlabel{max-width:430px;margin:38px auto 12px;padding:0 20px;display:flex;align-items:baseline;gap:10px}
+.vlabel b{font-family:Unbounded;font-size:16px}
+.vlabel span{color:#9aa;font-size:13px}
+.phone{max-width:430px;margin:0 auto;border-radius:34px;overflow:hidden;border:1px solid rgba(255,255,255,.1)}
+.row{display:flex;align-items:center}
+.sp{flex:1}
+/* ---------- V1 NOIR ---------- */
+.v1{background:#0e0e11;color:#f5f3f1;padding:20px 20px 30px}
+.v1 .brand{font-family:Unbounded;font-weight:700;font-size:17px}
+.v1 .chip{background:#222228;border-radius:999px;padding:7px 12px;font-size:12px;color:#9e9c9e}
+.v1 .kicker{color:#ff6b3d;font-size:11px;font-weight:600;letter-spacing:.16em;margin-top:30px}
+.v1 .sum{font-family:Unbounded;font-weight:700;font-size:52px;line-height:1.05;margin-top:6px}
+.v1 .sum small{font-family:"Golos Text";font-weight:500;font-size:17px;color:#9e9c9e;margin-left:6px}
+.v1 .sub{color:#9e9c9e;font-size:14px;margin-top:6px}
+.v1 .bar{height:5px;border-radius:3px;background:#222228;margin-top:14px}
+.v1 .bar i{display:block;height:100%;width:96%;border-radius:3px;background:#ff6b3d}
+.v1 .stats{display:flex;gap:8px;margin-top:16px}
+.v1 .stat{flex:1;background:#1a1a1e;border-radius:16px;padding:12px 14px}
+.v1 .stat b{font-family:Unbounded;font-weight:600;font-size:15px;display:block}
+.v1 .stat span{font-size:11px;color:#6b696b}
+.v1 .cta{display:flex;align-items:center;background:#ff6b3d;border-radius:18px;padding:17px 20px;margin-top:18px;font-weight:600;font-size:16px;color:#fff}
+.v1 .cta span{color:#ffd9cb;font-size:13px;font-weight:500}
+.v1 .sec{color:#6b696b;font-size:11px;font-weight:600;letter-spacing:.16em;margin:26px 0 12px}
+.v1 .big{position:relative;border-radius:22px;overflow:hidden;height:200px;margin-bottom:12px}
+.v1 .big img{width:100%;height:100%;object-fit:cover;display:block}
+.v1 .big .ov{position:absolute;inset:auto 0 0 0;padding:40px 18px 16px;background:linear-gradient(to top,rgba(0,0,0,.85),transparent)}
+.v1 .big .d{display:flex;font-size:11px;font-weight:600;letter-spacing:.14em;color:#ff8a60}
+.v1 .big .d i{font-style:normal;font-family:Unbounded;letter-spacing:0;color:#fff;font-size:14px}
+.v1 .big .n{font-weight:700;font-size:18px;margin-top:4px}
+.v1 .big.m{height:150px}
+.v1 .r{display:flex;align-items:center;gap:14px;background:#1a1a1e;border-radius:18px;padding:12px 16px 12px 14px;margin-bottom:10px}
+.v1 .r img{width:46px;height:46px;border-radius:14px;object-fit:cover}
+.v1 .r .d{font-size:10.5px;font-weight:600;letter-spacing:.14em;color:#ff8a60}
+.v1 .r .n{font-size:14.5px;font-weight:500;margin-top:2px;color:#f5f3f1}
+.v1 .r .p{font-family:Unbounded;font-weight:600;font-size:13px;color:#9e9c9e;white-space:nowrap}
+/* ---------- V2 GLASS ---------- */
+.v2{background:#f3f2f7;color:#1c1c29;padding:20px 20px 30px;position:relative;overflow:hidden}
+.v2 .blob{position:absolute;border-radius:50%;filter:blur(80px);opacity:.55;pointer-events:none}
+.v2 .b1{width:300px;height:280px;background:#ffb099;right:-80px;top:-60px}
+.v2 .b2{width:300px;height:300px;background:#b3c7ff;left:-120px;top:380px}
+.v2 .b3{width:280px;height:280px;background:#a6e6c6;right:-60px;top:850px}
+.v2>*{position:relative}
+.v2 .brand{font-family:Unbounded;font-weight:700;font-size:17px}
+.v2 .glass{background:rgba(255,255,255,.6);backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);border:1.2px solid rgba(255,255,255,.9);box-shadow:0 10px 30px rgba(76,76,115,.12)}
+.v2 .chip{border-radius:999px;padding:7px 12px;font-size:12px;color:#6b6c80}
+.v2 .hero{display:flex;align-items:center;gap:18px;border-radius:26px;padding:20px;margin-top:22px}
+.v2 .ring{width:96px;height:96px;border-radius:50%;flex:none;background:conic-gradient(#ff5e3a 0 96%,#e2e1ea 96% 100%);display:grid;place-items:center}
+.v2 .ring i{width:76px;height:76px;border-radius:50%;background:#fbfafd;display:grid;place-items:center;text-align:center;font-style:normal}
+.v2 .ring b{font-family:Unbounded;font-size:15px;display:block}
+.v2 .ring span{font-size:10px;color:#9b9cab}
+.v2 .ht{font-weight:700;font-size:16px}
+.v2 .hs{color:#6b6c80;font-size:13px;margin-top:5px}
+.v2 .cta{display:flex;align-items:center;border-radius:999px;padding:16px 20px;margin-top:14px;font-weight:600;font-size:16px;color:#fff;background:linear-gradient(135deg,#ff7f4d,#ff452b);box-shadow:0 10px 24px rgba(255,89,51,.4)}
+.v2 .cta span{color:#ffdfd2;font-size:14px}
+.v2 .seg{display:flex;gap:4px;border-radius:999px;padding:6px;margin-top:22px}
+.v2 .seg i{flex:1;text-align:center;font-style:normal;font-size:12px;font-weight:600;color:#6b6c80;padding:8px 0;border-radius:999px}
+.v2 .seg i.on{background:#1c1c29;color:#fff}
+.v2 .m{display:flex;align-items:center;gap:14px;border-radius:24px;padding:14px 16px 14px 14px;margin-top:12px}
+.v2 .m img{width:64px;height:64px;border-radius:20px;object-fit:cover}
+.v2 .m .l{font-size:10.5px;font-weight:600;letter-spacing:.1em;color:#ff5e3a}
+.v2 .m .n{font-weight:600;font-size:15px;margin-top:2px}
+.v2 .m .t{font-size:12px;color:#9b9cab;margin-top:2px}
+.v2 .m .p{font-family:Unbounded;font-weight:600;font-size:13px;white-space:nowrap}
+.v2 .wk{border-radius:24px;margin-top:24px;overflow:hidden}
+.v2 .wk .wr{display:flex;align-items:center;padding:13px 18px;font-size:14.5px;font-weight:500}
+.v2 .wk .wr+.wr{border-top:1px solid rgba(28,28,41,.06)}
+.v2 .wk .wr b{font-family:Unbounded;font-weight:600;font-size:13px;color:#6b6c80}
+.v2 .lbl{font-size:11px;font-weight:600;letter-spacing:.16em;color:#9b9cab;margin:24px 0 0}
+.v2 .tab{display:flex;justify-content:space-around;border-radius:999px;padding:12px 10px;margin-top:26px}
+.v2 .tab i{font-style:normal;text-align:center;font-size:9.5px;color:#9b9cab;font-weight:500}
+.v2 .tab i em{display:block;font-style:normal;width:22px;height:22px;border-radius:50%;background:#c6c6d2;margin:0 auto 3px}
+.v2 .tab i.on{color:#1c1c29}.v2 .tab i.on em{background:#ff5e3a}
+/* ---------- V3 BENTO ---------- */
+.v3{background:#f5efe4;color:#22242e;padding:20px 20px 30px}
+.v3 .brand{font-family:Unbounded;font-weight:700;font-size:17px;color:#22242e}
+.v3 .chip{background:#fff;border-radius:999px;padding:7px 12px;font-size:12px;color:#8a8577;border:1px solid #e7dfd0}
+.v3 .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:22px}
+.v3 .t{border-radius:24px;padding:18px}
+.v3 .t.sum{grid-column:1/3;background:#e8502f;color:#fff;display:flex;align-items:flex-end;justify-content:space-between;min-height:150px}
+.v3 .t.sum .k{font-size:11px;font-weight:600;letter-spacing:.14em;color:#ffd0c0}
+.v3 .t.sum b{font-family:Unbounded;font-weight:700;font-size:46px;line-height:1;display:block;margin-top:8px}
+.v3 .t.sum small{font-size:14px;font-weight:500;color:#ffd0c0}
+.v3 .t.sum .r8{text-align:right;font-size:12.5px;color:#ffd0c0;line-height:1.5}
+.v3 .t.dark{background:#22242e;color:#fff;display:flex;flex-direction:column;justify-content:space-between;min-height:110px}
+.v3 .t.dark b{font-family:Unbounded;font-size:19px}
+.v3 .t.dark span{font-size:11.5px;color:#9b97a8}
+.v3 .t.must{background:#e8a23d;color:#2b2008}
+.v3 .t.must b{font-family:Unbounded;font-size:19px}
+.v3 .t.must span{font-size:11.5px;color:#6d5519}
+.v3 .cta{grid-column:1/3;background:#22242e;color:#fff;border-radius:24px;padding:18px 20px;display:flex;align-items:center;font-weight:600;font-size:16px}
+.v3 .cta span{color:#9b97a8;font-size:13px;font-weight:500}
+.v3 .day{border-radius:24px;overflow:hidden;background:#fff;border:1px solid #e7dfd0}
+.v3 .day img{width:100%;height:96px;object-fit:cover;display:block}
+.v3 .day .in{padding:12px 14px 14px}
+.v3 .day .d{font-size:10.5px;font-weight:700;letter-spacing:.14em;color:#e8502f}
+.v3 .day .n{font-size:13.5px;font-weight:600;margin-top:3px;line-height:1.3}
+.v3 .day .p{font-family:Unbounded;font-weight:600;font-size:12.5px;margin-top:7px;color:#8a8577}
+.v3 .wide{grid-column:1/3;background:#fff;border:1px solid #e7dfd0;border-radius:24px;padding:4px 18px}
+.v3 .wide .wr{display:flex;align-items:center;padding:12px 0;font-size:14px;font-weight:500}
+.v3 .wide .wr+.wr{border-top:1px solid #efe8da}
+.v3 .wide .wr b{font-family:Unbounded;font-weight:600;font-size:12.5px;color:#8a8577}
+.choose{position:fixed;left:0;right:0;bottom:0;background:rgba(23,24,28,.92);backdrop-filter:blur(14px);padding:12px 16px calc(12px + env(safe-area-inset-bottom));text-align:center;font-size:14px;color:#cdd}
+.choose b{color:#fff}
+</style>
+</head>
+<body>
+<div class="pick">
+  <h1>Выбор дизайна</h1>
+  <p>Три направления. Листай вниз, скажи номер — и я переношу его на весь сервис.</p>
+</div>
+
+<div class="vlabel"><b>Вариант 1</b><span>Noir editorial — графит, коралл, фото во всю карточку</span></div>
+<div class="phone"><div class="v1">
+  <div class="row"><div class="brand">Sedmica</div><div class="sp"></div><div class="chip">Maxi · Beograd</div></div>
+  <div class="kicker">НЕДЕЛЯ СОБРАНА</div>
+  <div class="sum">7 671<small>дин</small></div>
+  <div class="sub">Бюджет 8 000 — остаётся 329 дин</div>
+  <div class="bar"><i></i></div>
+  <div class="stats">
+    <div class="stat"><b>1 163</b><span>ккал в день</span></div>
+    <div class="stat"><b>3 836</b><span>дин / чел</span></div>
+    <div class="stat"><b>21</b><span>блюдо</span></div>
+  </div>
+  <div class="cta">Список покупок<div class="sp"></div><span>34 позиции &nbsp;›</span></div>
+  <div class="sec">ДНИ НЕДЕЛИ</div>
+  <div class="big"><img src="img/chicken.jpg" alt=""><div class="ov">
+    <div class="d">ПОНЕДЕЛЬНИК · УЖИН<div class="sp"></div><i>610 дин</i></div>
+    <div class="n">Куриные бёдра с картошкой из духовки</div>
+  </div></div>
+  <div class="big m"><img src="img/pasta.jpg" alt=""><div class="ov">
+    <div class="d">ВТОРНИК · ОБЕД<div class="sp"></div><i>560 дин</i></div>
+    <div class="n">Паста болоньезе</div>
+  </div></div>
+  <div class="r"><img src="img/fish.jpg" alt=""><div style="flex:1"><div class="d">СРЕДА</div><div class="n">Хек с овощами из духовки</div></div><div class="p">620 дин</div></div>
+  <div class="r"><img src="img/oat.jpg" alt=""><div style="flex:1"><div class="d">ЧЕТВЕРГ</div><div class="n">Овсянка · Пасуль · Плов</div></div><div class="p">500 дин</div></div>
+  <div class="r"><img src="img/chicken.jpg" alt=""><div style="flex:1"><div class="d">ПЯТНИЦА</div><div class="n">Джувеч с курицей</div></div><div class="p">730 дин</div></div>
+</div></div>
+
+<div class="vlabel"><b>Вариант 2</b><span>Liquid glass — светлое стекло, blur, капсулы (iOS 26)</span></div>
+<div class="phone"><div class="v2">
+  <i class="blob b1"></i><i class="blob b2"></i><i class="blob b3"></i>
+  <div class="row"><div class="brand">Sedmica</div><div class="sp"></div><div class="chip glass">Maxi · Beograd</div></div>
+  <div class="hero glass">
+    <div class="ring"><i><span><b>7 671</b><span>из 8 000</span></span></i></div>
+    <div><div class="ht">Неделя уложилась в бюджет</div><div class="hs">Остаётся 329 дин · 1 163 ккал в день</div></div>
+  </div>
+  <div class="cta">Список покупок<div class="sp"></div><span>34 ›</span></div>
+  <div class="seg glass"><i class="on">пн</i><i>вт</i><i>ср</i><i>чт</i><i>пт</i><i>сб</i><i>вс</i></div>
+  <div class="m glass"><img src="img/oat.jpg" alt=""><div style="flex:1"><div class="l">ЗАВТРАК</div><div class="n">Овсянка с бананом и орехами</div><div class="t">20 мин · 2 порции</div></div><div class="p">150 дин</div></div>
+  <div class="m glass"><img src="img/pasta.jpg" alt=""><div style="flex:1"><div class="l">ОБЕД</div><div class="n">Паста болоньезе</div><div class="t">35 мин · 2 порции</div></div><div class="p">280 дин</div></div>
+  <div class="m glass"><img src="img/chicken.jpg" alt=""><div style="flex:1"><div class="l">УЖИН</div><div class="n">Куриные бёдра с картошкой</div><div class="t">50 мин · 2 порции</div></div><div class="p">180 дин</div></div>
+  <div class="lbl">ВСЯ НЕДЕЛЯ</div>
+  <div class="wk glass">
+    <div class="wr">Вторник<div class="sp"></div><b>560 дин</b></div>
+    <div class="wr">Среда<div class="sp"></div><b>620 дин</b></div>
+    <div class="wr">Четверг<div class="sp"></div><b>500 дин</b></div>
+  </div>
+  <div class="tab glass"><i class="on"><em></em>План</i><i><em></em>Покупки</i><i><em></em>Рецепты</i></div>
+</div></div>
+
+<div class="vlabel"><b>Вариант 3</b><span>Warm bento — крем, томат, плитки разных размеров</span></div>
+<div class="phone"><div class="v3">
+  <div class="row"><div class="brand">Sedmica</div><div class="sp"></div><div class="chip">Maxi · Beograd</div></div>
+  <div class="grid">
+    <div class="t sum">
+      <div><div class="k">НЕДЕЛЯ · MAXI</div><b>7 671</b><small>из 8 000 дин</small></div>
+      <div class="r8">остаётся<br><b style="font-family:Unbounded;font-size:18px;color:#fff">329</b><br>дин</div>
+    </div>
+    <div class="t dark"><b>1 163</b><span>ккал в день на человека</span></div>
+    <div class="t must" style="display:flex;flex-direction:column;justify-content:space-between;min-height:110px"><b>21</b><span>блюдо на неделю</span></div>
+    <div class="cta">Список покупок<div class="sp"></div><span>34 позиции ›</span></div>
+    <div class="day"><img src="img/chicken.jpg" alt=""><div class="in"><div class="d">ПН</div><div class="n">Куриные бёдра с картошкой</div><div class="p">610 дин</div></div></div>
+    <div class="day"><img src="img/pasta.jpg" alt=""><div class="in"><div class="d">ВТ</div><div class="n">Паста болоньезе</div><div class="p">560 дин</div></div></div>
+    <div class="day"><img src="img/fish.jpg" alt=""><div class="in"><div class="d">СР</div><div class="n">Хек с овощами</div><div class="p">620 дин</div></div></div>
+    <div class="day"><img src="img/oat.jpg" alt=""><div class="in"><div class="d">ЧТ</div><div class="n">Овсянка · Пасуль</div><div class="p">500 дин</div></div></div>
+    <div class="wide">
+      <div class="wr">Пятница<div class="sp"></div><b>730 дин</b></div>
+      <div class="wr">Суббота<div class="sp"></div><b>680 дин</b></div>
+      <div class="wr">Воскресенье<div class="sp"></div><b>590 дин</b></div>
+    </div>
+  </div>
+</div></div>
+
+<div class="choose">Какой берём? Ответь в чате: <b>1</b>, <b>2</b> или <b>3</b></div>
+</body>
+</html>
