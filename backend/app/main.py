@@ -89,7 +89,7 @@ def recipe(rid: str):
         raise HTTPException(404, "recipe not found")
     ings = [{"id": k, "ru": ING_BY_ID[k]["ru"], "sr": ING_BY_ID[k]["sr"],
              "qty": v, "unit": ING_BY_ID[k]["unit"]} for k, v in r["ings"].items()]
-    return {**r, "ingredients": ings, "steps": STEPS.get(rid, {"ru": [], "sr": []})}
+    return {**r, "ingredients": ings, "steps": STEPS.get(rid, {})}
 
 
 # --- static frontend (production) ---

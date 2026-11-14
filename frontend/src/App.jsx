@@ -550,11 +550,12 @@ function DayView({ t, lang, plan, dayIdx, setDayIdx, onBack, onSwap, onOpen }) {
 function RecipeSheet({ t, lang, recipe, onClose }) {
   const { data, servings } = recipe;
   const name = lang === "ru" ? data.ru : data.sr;
-  const steps = data.steps?.[lang] ?? [];
+  const content = data.steps?.[lang] ?? {};
+  const steps = content.steps ?? [];
   const qty = (ing) => {
     const total = ing.qty * servings;
     if (ing.unit === "pcs") return `${Math.max(1, Math.round(total))} ${t.pcs}`;
-    return `${Math.round(total)} ${ing.unit === "ml" ? "ml" : "g"}`;
+    return `${Math.round(total)} ${ing.unit === "ml" ? t.ml : t.g}`;
   };
   return (
     <div className="sheet-wrap" onClick={onClose}>
@@ -573,6 +574,7 @@ function RecipeSheet({ t, lang, recipe, onClose }) {
           <button className="iconbtn" onClick={onClose} aria-label={t.close}><Icon name="x" size={18} /></button>
         </div>
         <div className="sheet-body">
+          {content.desc && <p className="sheet-desc">{content.desc}</p>}
           <div className="sheet-label">{t.ingredients}</div>
           <ul className="ing-list">
             {data.ingredients.map((ing) => (
@@ -586,6 +588,12 @@ function RecipeSheet({ t, lang, recipe, onClose }) {
           <ol className="step-list">
             {steps.map((s, i) => <li key={i}>{s}</li>)}
           </ol>
+          {content.tip && (
+            <div className="sheet-tip">
+              <span className="tl">{t.tip}</span>
+              <span>{content.tip}</span>
+            </div>
+          )}
         </div>
       </div>
     </div>
