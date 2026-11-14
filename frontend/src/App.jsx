@@ -235,11 +235,10 @@ function Landing({ t, meta, city, setCity, onStart }) {
         <span className="hl">{t.heroTitle.split("\n")[1]}</span>
       </h1>
       <p>{t.heroSub}</p>
-      <div className="week-strip" aria-hidden="true">
+      <div className="week-strip photo" aria-hidden="true">
         {t.daysShort.map((d, i) => (
-          <div className="cell" key={d}>
+          <div className="cell" key={d} style={{ backgroundImage: `url(${dishPhoto(week[i])})` }}>
             <span className="d">{d}</span>
-            <span className="e"><Icon name={week[i]} size={22} /></span>
           </div>
         ))}
       </div>
@@ -625,8 +624,48 @@ function DayView({ t, lang, plan, dayIdx, setDayIdx, onBack, onSwap, onOpen }) {
 }
 
 /* ---------------- Recipe sheet ---------------- */
+function CookMode({ t, name, steps, onClose }) {
+  const [i, setI] = useState(0);
+  const done = i >= steps.length;
+  return (
+    <div className="cook">
+      <div className="cook-head">
+        <span className="cn">{name}</span>
+        <button className="iconbtn" onClick={onClose} aria-label={t.close}><Icon name="x" size={18} /></button>
+      </div>
+      <div className="cook-progress">
+        {steps.map((_, k) => <i key={k} className={k < i || done ? "on" : ""} />)}
+      </div>
+      {done ? (
+        <div className="cook-body">
+          <div className="bigstep fin"><Icon name="check" size={46} stroke={2.5} /></div>
+          <div className="cook-text" style={{ textAlign: "center" }}>
+            <b style={{ display: "block", fontSize: 22, marginBottom: 8 }}>{t.bon}</b>
+            {t.bonSub}
+          </div>
+        </div>
+      ) : (
+        <div className="cook-body" key={i}>
+          <div className="bigstep">{i + 1}</div>
+          <div className="cook-label">{t.stepShort(i + 1, steps.length)}</div>
+          <div className="cook-text">{steps[i]}</div>
+        </div>
+      )}
+      <div className="cook-foot">
+        {!done && i > 0 && <button className="cta secondary" onClick={() => setI(i - 1)}>‹ {t.back}</button>}
+        {done ? (
+          <button className="cta" onClick={onClose}>{t.finish}</button>
+        ) : (
+          <button className="cta" onClick={() => setI(i + 1)}>{t.next} ›</button>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function RecipeSheet({ t, lang, recipe, onClose }) {
   const { data, servings } = recipe;
+  const [cooking, setCooking] = useState(false);
   const touch = useRef(null);
   const onTouchStart = (e) => { touch.current = e.touches[0].clientY; };
   const onTouchEnd = (e) => {
@@ -636,6 +675,7 @@ function RecipeSheet({ t, lang, recipe, onClose }) {
   const name = lang === "ru" ? data.ru : data.sr;
   const content = data.steps?.[lang] ?? {};
   const steps = content.steps ?? [];
+  if (cooking) return <CookMode t={t} name={name} steps={steps} onClose={() => setCooking(false)} />;
   const qty = (ing) => {
     const total = ing.qty * servings;
     if (ing.unit === "pcs") return `${Math.max(1, Math.round(total))} ${t.pcs}`;
@@ -644,11 +684,11 @@ function RecipeSheet({ t, lang, recipe, onClose }) {
   return (
     <div className="sheet-wrap" onClick={onClose}>
       <div className="sheet" onClick={(e) => e.stopPropagation()} role="dialog" aria-label={name}>
-        <div className="sheet-grab" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd} />
-        <div className="sheet-photo" style={{ backgroundImage: `url(${dishPhoto(data.icon)})` }}
-          onTouchStart={onTouchStart} onTouchEnd={onTouchEnd} />
-        <div className="sheet-head" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
-          <div className="sheet-title">
+        <div className="sheet-photo full" style={{ backgroundImage: `url(${dishPhoto(data.icon)})` }}
+          onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
+          <span className="sheet-grab" />
+          <button className="iconbtn close" onClick={onClose} aria-label={t.close}><Icon name="x" size={18} /></button>
+          <div className="photo-ov">
             <h3>{name}</h3>
             <div className="meta">
               <span><Icon name="clock" size={13} /> {data.time} {t.min}</span>
@@ -656,9 +696,9 @@ function RecipeSheet({ t, lang, recipe, onClose }) {
               <span><Icon name="fire" size={13} /> {fmt(data.kcal)} kcal</span>
             </div>
           </div>
-          <button className="iconbtn" onClick={onClose} aria-label={t.close}><Icon name="x" size={18} /></button>
         </div>
         <div className="sheet-body">
+          <button className="cta cookbtn" onClick={() => setCooking(true)}>{t.cook}</button>
           {content.desc && <p className="sheet-desc">{content.desc}</p>}
           <div className="sheet-label">{t.ingredients}</div>
           <ul className="ing-list">
@@ -702,7 +742,7 @@ function ShopView({ t, lang, plan, checked, setChecked, onBack }) {
         <span className="label">{fmt(plan.total)} {t.cur}</span>
       </div>
       <h2 style={{ fontSize: 24, fontWeight: 700, marginTop: 10 }}>{t.shopTitle}</h2>
-      <div className={`shop-progress ${allDone ? "alldone" : ""}`}>
+      <div className={`shop-progress sticky ${allDone ? "alldone" : ""}`}>
         <div className="row">
           <span className="big">{allDone ? t.allDone : t.bought(done, items.length)}</span>
           {!allDone && <span className="sub">{t.keepGoing}</span>}
