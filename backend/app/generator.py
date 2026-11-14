@@ -27,6 +27,13 @@ def _blocked(recipe, allergies, stops):
     return False
 
 
+def _available(recipe, store):
+    for ing_id in recipe["ings"]:
+        if store in ING_BY_ID[ing_id].get("not_in", []):
+            return False
+    return True
+
+
 def _equip_ok(recipe, equipment):
     eq = set(equipment)
     for group in recipe["equip"]:
@@ -37,10 +44,11 @@ def _equip_ok(recipe, equipment):
     return True
 
 
-def candidates(meal, allergies, stops, equipment):
+def candidates(meal, allergies, stops, equipment, store="maxi"):
     return [r for r in RECIPES
             if r["meal"] == meal
             and _equip_ok(r, equipment)
+            and _available(r, store)
             and not _blocked(r, allergies, stops)]
 
 
@@ -141,10 +149,10 @@ def generate(params):
 
     servings_map = {"breakfast": people, "lunch": people, "dinner": people, "family": people}
 
-    pools = {m: candidates(m, allergies, stops, equipment) for m in MEALS}
+    pools = {m: candidates(m, allergies, stops, equipment, store) for m in MEALS}
     for m in MEALS:
         if not pools[m]:
-            pools[m] = [r for r in RECIPES if r["meal"] == m and _equip_ok(r, equipment)]
+            pools[m] = [r for r in RECIPES if r["meal"] == m and _equip_ok(r, equipment) and _available(r, store)]
         if not pools[m]:
             pools[m] = [r for r in RECIPES if r["meal"] == m]
 
@@ -191,7 +199,7 @@ def swap_meal(plan, day, meal):
     """Replace one meal with a different candidate, cheapest-first bias."""
     p = plan["params"]
     rng = random.Random()
-    pools = candidates(meal, p["allergies"], p["stops"], p["equipment"])
+    pools = candidates(meal, p["allergies"], p["stops"], p["equipment"], p["store"])
     current = plan["week"][day].get(meal)
     options = [r for r in pools if r["id"] != current]
     if not options:

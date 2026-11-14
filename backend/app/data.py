@@ -43,7 +43,7 @@ STOP_SUGGESTIONS = [
     {"ru": "Свинина", "sr": "Svinjetina"}, {"ru": "Говядина", "sr": "Junetina"},
     {"ru": "Грибы", "sr": "Pečurke"}, {"ru": "Лук", "sr": "Crni luk"},
     {"ru": "Баклажаны", "sr": "Plavi patlidžan"}, {"ru": "Печень", "sr": "Džigerica"},
-    {"ru": "Творог", "sr": "Mladi sir"}, {"ru": "Тофу", "sr": "Tofu"},
+    {"ru": "Творог", "sr": "Sitan sir"}, {"ru": "Тофу", "sr": "Tofu"},
     {"ru": "Брокколи", "sr": "Brokoli"}, {"ru": "Цветная капуста", "sr": "Karfiol"},
     {"ru": "Перловка", "sr": "Ječam"}, {"ru": "Сельдерей", "sr": "Celer"},
 ]
@@ -58,10 +58,10 @@ CATS = {
 }
 
 # ing: id, ru, sr, cat, pack (qty in base unit), unit(g|ml|pcs), pack_label_ru/sr, price RSD per pack, allergens, stop keys
-def I(id, ru, sr, cat, pack, unit, lab_ru, lab_sr, price, allergens=(), stop=()):
+def I(id, ru, sr, cat, pack, unit, lab_ru, lab_sr, price, allergens=(), stop=(), not_in=()):
     return {"id": id, "ru": ru, "sr": sr, "cat": cat, "pack": pack, "unit": unit,
             "lab_ru": lab_ru, "lab_sr": lab_sr, "price": price,
-            "allergens": list(allergens), "stop": list(stop)}
+            "allergens": list(allergens), "stop": list(stop), "not_in": list(not_in)}
 
 INGREDIENTS = [
     I("chicken", "Куриное филе", "Pileće belo meso", "meat", 1000, "g", "1 кг", "1 kg", 749),
@@ -78,8 +78,7 @@ INGREDIENTS = [
 
     I("milk", "Молоко 2,8%", "Mleko 2,8%", "dairy", 1000, "ml", "1 л", "1 l", 139, allergens=("milk",)),
     I("yogurt", "Йогурт", "Jogurt", "dairy", 1000, "ml", "1 л", "1 l", 189, allergens=("milk",)),
-    I("kajmak", "Каймак", "Kajmak", "dairy", 250, "g", "250 г", "250 g", 379, allergens=("milk",)),
-    I("cottage", "Творог (млади сыр)", "Mladi sir", "dairy", 500, "g", "500 г", "500 g", 329, allergens=("milk",), stop=("творог", "mladi sir")),
+    I("cottage", "Творог (ситан сир)", "Sitan (švapski) sir", "dairy", 500, "g", "500 г", "500 g", 329, allergens=("milk",), stop=("творог", "mladi sir")),
     I("sour_cream", "Сметана 20%", "Pavlaka 20%", "dairy", 400, "g", "400 г", "400 g", 219, allergens=("milk",)),
     I("cheese", "Сыр (гауда)", "Gauda sir", "dairy", 400, "g", "400 г", "400 g", 489, allergens=("milk",)),
     I("feta", "Белый сыр", "Beli sir", "dairy", 400, "g", "400 г", "400 g", 419, allergens=("milk",)),
@@ -119,7 +118,6 @@ INGREDIENTS = [
     I("passata", "Томаты протёртые", "Pasirani paradajz", "grocery", 500, "g", "500 г", "500 g", 169),
     I("oil", "Масло подсолнечное", "Suncokretovo ulje", "grocery", 1000, "ml", "1 л", "1 l", 189),
     I("sugar", "Сахар", "Šećer", "grocery", 1000, "g", "1 кг", "1 kg", 129),
-    I("barley", "Перловка", "Ječam", "grocery", 500, "g", "500 г", "500 g", 179, allergens=("gluten",), stop=("перловка", "ječam")),
     I("semolina", "Манка (гриз)", "Griz", "grocery", 500, "g", "500 г", "500 g", 139, allergens=("gluten",)),
 
     I("salt_spices", "Соль и специи", "So i začini", "other", 1, "pcs", "набор", "set", 249),
@@ -267,3 +265,17 @@ RECIPE_ICON = {
 }
 for _r in RECIPES:
     _r["icon"] = RECIPE_ICON.get(_r["id"], "stew")
+
+# real-world availability: narrow-range chains don't carry these
+NOT_IN = {
+    "tofu": ["dis", "aroma", "roda", "idea"],
+    "turkey": ["dis", "aroma"],
+    "tortilla": ["aroma", "dis"],
+    "buckwheat": ["aroma"],
+    "broccoli": ["aroma"],
+    "chickpeas": ["aroma"],
+    "walnuts": [],
+    "hake": ["aroma"],
+}
+for _i in INGREDIENTS:
+    _i["not_in"] = NOT_IN.get(_i["id"], _i.get("not_in", []))
